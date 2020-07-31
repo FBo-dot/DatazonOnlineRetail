@@ -19,7 +19,8 @@ Input:
         CustomerID     non-null float64
         Country        non-null object
     
-    final models: joblib file with results from modelling notebook.
+    final models: joblib file with learning results from modelling notebook.
+    final results: joblib file with running results on test set
     
 Notes:  1. Only UK data will be processed.
         2. Classes description as from the exploratory analysis results
@@ -37,6 +38,7 @@ print('==========================================\n')
 
 # Load Models
 saved_models_path = 'final_models.joblib'
+saved_results_path = 'final_results.joblib'
 
 with open(saved_models_path,'rb') as f:
     reduced_pipeline = load(f)
@@ -48,6 +50,9 @@ with open(saved_models_path,'rb') as f:
     attributes = load(f)
     min_max_attr = load(f)
     power_attr = load(f)
+
+with open(saved_results_path,'rb') as f:
+    saved_final_results = load(f)
 
 # Description of the classes as from the exploratory analysis
 class_desc = {
@@ -142,6 +147,9 @@ predictions = final_model.predict(X_prepared)
 
 print('\nClassification results')
 print('----------------------\n')
+print('Estimated accuracy: {:.2f}\n'.format(
+        dict(zip(saved_final_results.get('Model name'),
+                 saved_final_results.get('Test score'))).get('SVC Linear')))
 
 for cust, cl in zip(customers.index, predictions):
     print('Customer {:.0f}: class Cl{}: {}'.format(cust, cl, class_desc[cl]))
